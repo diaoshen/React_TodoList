@@ -4,13 +4,15 @@ import './App.css';
 /**
  * Author: DIAO 
  * Date : 2/11/2020
- * Version : 2 (based on v1)
+ * Version : 3 (based on v2)
  * Description : 
- *  Previous version the App component will render a list outside of class. 
+ *  
  *  What's new in this version ? 
- * 
- *  1. In render()  mapping list within App's list instead of list outside of class 
- *  2. Add onDismiss to dismiss items on click (also binded the function in constructor)
+ *  
+ *  1. Use of arrow function for onDismiss to automatic binding 
+ *  2. Interation with forms 
+ *      Added search filtering 
+ *  3. Use of Destructing 
  */
 
 
@@ -36,6 +38,10 @@ const list = [
   },
 ];
 
+//Returns true if the item === searchTerm 
+// the include function does the pattern matching , if pattern matched then item gets to stay
+const isSearched = searchTerm => item => 
+  item.title.toLowerCase().includes(searchTerm.toLowerCase());
 
 class App extends React.Component {
   /**
@@ -48,30 +54,39 @@ class App extends React.Component {
     /** Setup state  */
     this.state = {
         list, /** ES 6 Feature ,   list : list  can be just list if property and variable share same name */
+        searchTerm : '',
     };
-
-    /** Bind class member function: onDismiss() to make it a class method so "this" is accessible to onDimiss()  */
-    this.onDismiss = this.onDismiss.bind(this);   
 
   }//END Constructor 
 
   /** Returns an updated list without item with objectID === id */
   /** This function gets invoked when button is hit which after generating updated list then call setState() to render this component */
-  onDismiss(id) {
-    console.log("onDimiss Clicked");
+  onDismiss = (id) => {
     const updatedList = this.state.list.filter((item) => item.objectID !== id);  
-    this.setState({list: updatedList});
+    this.setState({list: updatedList}); 
   }
+
+  onSearchChange = (e) => {
+    this.setState({searchTerm: e.target.value});
+  } 
 
   /**
    * Map each element in list and display its content 
    */
   render(){
+      //Destructing 
+      const {searchTerm , list} = this.state;
       return(
-        <div className="App">
+        <div className="App">    
+          <form>
+            <input type="text"
+                   value={this.searchTerm}
+                   onChange ={ this.onSearchChange }
+            />
+          </form>
            {
-             //Mapping App's list , NOT the list outside of class ! 
-             this.state.list.map((item) =>      
+             //Mapping Filter App's List then Map App's list , NOT the list outside of class ! 
+             list.filter(isSearched(searchTerm)).map((item) =>      
                  <div key={item.objectID}>
                    <span> <a href={item.url}>{item.title} </a></span>
                    <span>{item.author} </span>
@@ -79,7 +94,7 @@ class App extends React.Component {
                    <span>{item.points} </span>
                    <span>
                      <button
-                        onClick={ ()=> this.onDismiss(item.objectID) }
+                        onClick={()=> this.onDismiss(item.objectID) }
                         type="button"
                      >
                        Dismiss 
