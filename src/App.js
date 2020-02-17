@@ -9,10 +9,7 @@ import './App.css';
  *  
  *  What's new in this version ? 
  *  
- *  1. Use of arrow function for onDismiss to automatic binding 
- *  2. Interation with forms 
- *      Added search filtering 
- *  3. Use of Destructing 
+ *  1. Split into components 
  */
 
 
@@ -70,42 +67,70 @@ class App extends React.Component {
     this.setState({searchTerm: e.target.value});
   } 
 
-  /**
-   * Map each element in list and display its content 
-   */
   render(){
       //Destructing 
       const {searchTerm , list} = this.state;
       return(
-        <div className="App">    
-          <form>
-            <input type="text"
-                   value={this.searchTerm}
-                   onChange ={ this.onSearchChange }
-            />
-          </form>
-           {
-             //Mapping Filter App's List then Map App's list , NOT the list outside of class ! 
-             list.filter(isSearched(searchTerm)).map((item) =>      
-                 <div key={item.objectID}>
-                   <span> <a href={item.url}>{item.title} </a></span>
-                   <span>{item.author} </span>
-                   <span>{item.num_comments} </span>
-                   <span>{item.points} </span>
-                   <span>
-                     <button
-                        onClick={()=> this.onDismiss(item.objectID) }
-                        type="button"
-                     >
-                       Dismiss 
-                     </button>
-                   </span>
-                  </div>
-             )
-           }
-        </div>
+        <div className="App"> 
+          <Search 
+            value={searchTerm} 
+            onChange={this.onSearchChange}
+          >
+            Search   
+          </Search>
+          <Table 
+            list={list} 
+            pattern={searchTerm} 
+            onDismiss={this.onDismiss}/>
+        </div>   
       )
   }//END RENDER() 
 }//END CLASS APP
+
+
+class Search extends React.Component {
+  render() {
+    const {value, onChange , children} = this.props;
+    return (
+      <form>
+      {children} 
+      <input
+          type="text"
+          value={value}
+          onChange={onChange} />
+      </form>
+    );
+  }
+}
+
+class Table extends React.Component {
+  render() {
+    const {list, pattern, onDismiss} = this.props;
+    return (
+      <div>
+        {
+          list.filter(isSearched(pattern)).map((item) =>      
+            <div key={item.objectID}>
+              <span> <a href={item.url}>{item.title} </a></span>
+              <span>{item.author} </span>
+              <span>{item.num_comments} </span>
+              <span>{item.points} </span>
+              <span>
+                <button
+                  onClick={()=> onDismiss(item.objectID) }
+                  type="button"
+                >
+                  Dismiss 
+                </button>
+              </span>
+            </div>
+          )     
+        }
+      </div>
+    );
+  }
+}
+
+
 
 export default App;
