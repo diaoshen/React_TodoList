@@ -4,7 +4,7 @@ import './App.css';
 /**
  * Author: DIAO 
  * Date : 2/11/2020
- * Version : 3 (based on v2)
+ * Version : 4 (based on v3)
  * Description : 
  *  
  *  What's new in this version ? 
@@ -127,6 +127,27 @@ class Table extends React.Component {
           )     
         }
       </div>
+    );
+  }
+}
+
+class Button extends React.Component {
+  render() {
+
+    const {
+      onClick, 
+      className,
+      children,
+    } = this.props;
+
+    return (
+      <button
+        onClick = {onClick}
+        className = {className}
+        type="button"
+      >
+        {children}
+      </button>
     );
   }
 }
