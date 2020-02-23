@@ -4,12 +4,12 @@ import './App.css';
 /**
  * Author: DIAO 
  * Date : 2/11/2020
- * Version : 4 (based on v3)
+ * Version : 5 (based on v4)
  * Description : 
  *  
  *  What's new in this version ? 
  *  
- *  1. Split into components 
+ *  1. Split into functional components 
  */
 
 
@@ -88,59 +88,47 @@ class App extends React.Component {
 }//END CLASS APP
 
 
-class Search extends React.Component {
-  render() {
-    const {value, onChange , children} = this.props;
-    return (
-      <form>
+
+
+const Search = ({value, onChange, children}) => 
+    <form>
       {children} 
       <input
           type="text"
           value={value}
           onChange={onChange} />
-      </form>
-    );
-  }
-}
+    </form>
 
-class Table extends React.Component {
-  render() {
-    const {list, pattern, onDismiss} = this.props;
-    return (
-      <div>
-        {
-          list.filter(isSearched(pattern)).map((item) =>      
-            <div key={item.objectID}>
-              <span> <a href={item.url}>{item.title} </a></span>
-              <span>{item.author} </span>
-              <span>{item.num_comments} </span>
-              <span>{item.points} </span>
-              <span>
-                <button
-                  onClick={()=> onDismiss(item.objectID) }
-                  type="button"
-                >
-                  Dismiss 
-                </button>
-              </span>
-            </div>
-          )     
-        }
-      </div>
-    );
-  }
-}
 
-class Button extends React.Component {
-  render() {
 
+const Table = ({list,pattern,onDismiss}) => 
+    <div>
+      {
+        list.filter(isSearched(pattern)).map((item) =>      
+          <div key={item.objectID}>
+            <span> <a href={item.url}>{item.title} </a></span>
+            <span>{item.author} </span>
+            <span>{item.num_comments} </span>
+            <span>{item.points} </span>
+            <span>
+              <Button onClick={()=> onDismiss(item.objectID) }>
+                Dismiss 
+              </Button>
+            </span>
+          </div>
+        )     
+      }
+    </div>
+
+
+const Button = (props) => {
     const {
       onClick, 
-      className,
+      className = '',
       children,
-    } = this.props;
+    } = props;
 
-    return (
+    return(
       <button
         onClick = {onClick}
         className = {className}
@@ -148,10 +136,8 @@ class Button extends React.Component {
       >
         {children}
       </button>
-    );
-  }
+    )
 }
-
 
 
 export default App;
