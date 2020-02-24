@@ -10,6 +10,7 @@ import './App.css';
  *  What's new in this version ? 
  *  
  *  1. Fetch API 
+ *  2. Server-Side search
  */
 
 
@@ -23,10 +24,7 @@ const PARAM_SEARCH = 'query=';
 //const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${DEFAULT_QUERY}`;
 
 
-//Returns true if the item === searchTerm 
-// the include function does the pattern matching , if pattern matched then item gets to stay
-const isSearched = searchTerm => item => 
-  item.title.toLowerCase().includes(searchTerm.toLowerCase());
+
 
 class App extends React.Component {
   /**
@@ -47,8 +45,10 @@ class App extends React.Component {
   /** Returns an updated list without item with objectID === id */
   /** This function gets invoked when button is hit which after generating updated list then call setState() to render this component */
   onDismiss = (id) => {
-    const updatedList = this.state.list.filter((item) => item.objectID !== id);  
-    this.setState({list: updatedList}); 
+    const updatedHits = this.state.result.hits.filter((item) => item.objectID !== id);  
+    this.setState({
+      result: {...this.state.result, hits: updatedHits}
+    }); 
   }
 
   onSearchChange = (e) => {
@@ -59,20 +59,30 @@ class App extends React.Component {
     this.setState({result});
   }
 
+  /** This runs after first render() is complete */
   componentDidMount() {
+    this.fetchSearchTopStories(this.state.searchTerm)
+  }
+
+  fetchSearchTopStories = (searchTerm) => {
+      const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`;
+      fetch(url)
+        .then(response => response.json())
+        .then(result => this.setSearchTopStories(result))
+        .catch(error => error);  
+  }
+
+  onSearchSubmit = (e) => {
     const { searchTerm } = this.state;
-    const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`;
-    fetch(url)
-      .then(response => response.json())
-      .then(result => this.setSearchTopStories(result))
-      .catch(error => error);
+    this.fetchSearchTopStories(searchTerm);
+    e.preventDefault(); //Prevent submit refresh
   }
 
   render(){
 
       const { searchTerm, result } = this.state;
 
-      if(!result) { return null; }
+ //     if(!result) { return null; }
 
       return(
         <div className="page"> 
@@ -80,13 +90,15 @@ class App extends React.Component {
             <Search 
               value={searchTerm} 
               onChange={this.onSearchChange}
+              onSubmit={this.onSearchSubmit}
             >
               Search   
             </Search>
+            { result &&
             <Table 
               list={result.hits} 
-              pattern={searchTerm} 
               onDismiss={this.onDismiss}/>
+            }
           </div>
         </div>   
       )
@@ -96,25 +108,27 @@ class App extends React.Component {
 
 
 
-const Search = ({value, onChange, children}) => 
-    <form>
-      {children} 
+const Search = ({value, onChange, onSubmit, children}) => 
+    <form onSubmit={onSubmit}>
       <input
           type="text"
           value={value}
           onChange={onChange} />
+      <button type="submit">
+        {children}
+      </button>
     </form>
 
 
 
-const Table = ({list,pattern,onDismiss}) => 
+const Table = ({list,onDismiss}) => 
     <div className="table">
       {
-        list.filter(isSearched(pattern)).map((item) =>      
+        list.map((item) =>      
           <div key={item.objectID} className="table-row">
             <span style={{width: '40%'}}> 
               <a href={item.url}>{item.title}</a>
-              </span>
+            </span>
             <span style={{width: '30%'}}>
               {item.author}
             </span>
