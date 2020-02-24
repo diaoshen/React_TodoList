@@ -9,7 +9,7 @@ import './App.css';
  *  
  *  What's new in this version ? 
  *  
- *  1. Split into functional components 
+ *  1. Added CSS 
  */
 
 
