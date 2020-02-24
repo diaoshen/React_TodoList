@@ -71,17 +71,19 @@ class App extends React.Component {
       //Destructing 
       const {searchTerm , list} = this.state;
       return(
-        <div className="App"> 
-          <Search 
-            value={searchTerm} 
-            onChange={this.onSearchChange}
-          >
-            Search   
-          </Search>
-          <Table 
-            list={list} 
-            pattern={searchTerm} 
-            onDismiss={this.onDismiss}/>
+        <div className="page"> 
+          <div className="interactions">
+            <Search 
+              value={searchTerm} 
+              onChange={this.onSearchChange}
+            >
+              Search   
+            </Search>
+            <Table 
+              list={list} 
+              pattern={searchTerm} 
+              onDismiss={this.onDismiss}/>
+          </div>
         </div>   
       )
   }//END RENDER() 
@@ -102,16 +104,26 @@ const Search = ({value, onChange, children}) =>
 
 
 const Table = ({list,pattern,onDismiss}) => 
-    <div>
+    <div className="table">
       {
         list.filter(isSearched(pattern)).map((item) =>      
-          <div key={item.objectID}>
-            <span> <a href={item.url}>{item.title} </a></span>
-            <span>{item.author} </span>
-            <span>{item.num_comments} </span>
-            <span>{item.points} </span>
-            <span>
-              <Button onClick={()=> onDismiss(item.objectID) }>
+          <div key={item.objectID} className="table-row">
+            <span style={{width: '40%'}}> 
+              <a href={item.url}>{item.title}</a>
+              </span>
+            <span style={{width: '30%'}}>
+              {item.author}
+            </span>
+            <span style={{width: '10%'}}>
+              {item.num_comments} 
+            </span>
+            <span style={{width: '10%'}}>
+              {item.points} 
+            </span>
+            <span style={{width: '10%'}}>
+              <Button onClick={()=> onDismiss(item.objectID) }
+                      className="button-inline"
+              >
                 Dismiss 
               </Button>
             </span>
