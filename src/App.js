@@ -20,7 +20,7 @@ const PATH_SEARCH = '/search';
 const PARAM_SEARCH = 'query=';
 
 // output: https://hn.algolia.com/api/v1/search?=redux
-const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${DEFAULT_QUERY}`;
+//const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${DEFAULT_QUERY}`;
 
 
 //Returns true if the item === searchTerm 
@@ -61,8 +61,8 @@ class App extends React.Component {
 
   componentDidMount() {
     const { searchTerm } = this.state;
-
-    fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`)
+    const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`;
+    fetch(url)
       .then(response => response.json())
       .then(result => this.setSearchTopStories(result))
       .catch(error => error);
